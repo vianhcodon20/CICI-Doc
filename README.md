@@ -272,12 +272,37 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Login to docker hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Tags docker image
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/demo-cicd # Change this to your docker image name
+
+      - name: Build and push to docker hub
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+
       - name: Deploy to server
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.HOST }} # Địa chỉ của server
           username: ${{ secrets.USERNAME }} # Username để login vào server
-#          key: ${{ secrets.SSH_KEY }} # Private key để login vào server
+          key: ${{ secrets.SSH_KEY }} # Private key để login vào server
 
           script: |
 #           Pull image về lại server
@@ -288,7 +313,8 @@ jobs:
             docker run -it -d --name demo-cicd -p 8080:80 ${{ steps.meta.outputs.tags }}
 ```
 
-
+Them secret HOST tren github
+![image](https://github.com/user-attachments/assets/e7a28cbc-7cb8-4b47-951a-fad0dab079cc)
 
 
 
