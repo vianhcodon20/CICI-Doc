@@ -234,12 +234,59 @@ jobs:
           tags: ${{ steps.meta.outputs.tags }}
 ```
 
+## Step:
+
+Vi ly do bao mat nen ta khong the public thong tin cua user pass cua Docker Hub nen ta sẽ sử dụng tính năng secrets của Github để bảo vệ và quản lý các thông tin này.
+
+Truy cập lại vào repository trên Github, chọn `Repo` -> `demo` -> `Setting` -> `Secrets and variables` -> `Actions` -> `New repository secret`
+
+![image](https://github.com/user-attachments/assets/54810f3a-8d65-482d-abce-9ca226914c89)
+
+Chay lai actions
+
+![image](https://github.com/user-attachments/assets/5330bb92-5456-4a93-8746-75871ac081ae)
 
 
 
+![image](https://github.com/user-attachments/assets/3b453277-e95a-4a8d-8b3e-45f8cc770f1d)
 
 
+## Step
 
+Khoi chay container tren Server
+
+Tao 1 wfl moi `deploy-server.yml`
+
+```
+name: "Build and deploy to server"
+
+on:
+  push:
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    name: Deploy to server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Deploy to server
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.HOST }} # Địa chỉ của server
+          username: ${{ secrets.USERNAME }} # Username để login vào server
+#          key: ${{ secrets.SSH_KEY }} # Private key để login vào server
+
+          script: |
+#           Pull image về lại server
+            docker pull ${{ steps.meta.outputs.tags }}
+#           Xóa container cũ nếu có
+            docker rm -f demo-cicd &>/dev/null
+#           Chạy container mới
+            docker run -it -d --name demo-cicd -p 8080:80 ${{ steps.meta.outputs.tags }}
+```
 
 
 
