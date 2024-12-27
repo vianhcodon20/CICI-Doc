@@ -75,12 +75,21 @@ docker login
 ![image](https://github.com/user-attachments/assets/8b5902ab-95a4-4316-afbf-81d2df704f3c)
 
 
+Build image voi username docker hub
+```
+sudo docker build --platform=linux/amd64,linux/arm64 -t toandnseta/demo-cicd .
+```
 
 
 
 
 
-
+sudo docker buildx build --platform linux/amd64,linux/arm64 -t toandnseta/demo-cicd .
+[sudo] password for ubuntu: 
+[+] Building 0.0s (0/0)                                                                                                                 docker:default
+ERROR: Multi-platform build is not supported for the docker driver.
+Switch to a different driver, or turn on the containerd image store, and try again.
+Learn more at https://docs.docker.com/go/build-multi-platform/
 
 
 
