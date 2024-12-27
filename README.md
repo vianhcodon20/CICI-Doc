@@ -49,13 +49,13 @@ CMD ["nginx", "-g", "daemon off;"]
 
 Build Docker images tu Dokerfile
 ```
-cd my-web-app/
-docker build -t my-static-web .
+cd demo-cicd/
+docker build -t demo-cicd .
 ```
 
 Run the Docker container on port 8080
 ```
-docker run -d -p 8080:80 my-static-web
+docker run -d -p 8080:80 demo-cicd
 ```
 
 Kiem tra web:
@@ -80,16 +80,40 @@ Build image voi username docker hub
 sudo docker build --platform=linux/amd64,linux/arm64 -t toandnseta/demo-cicd .
 ```
 
+------
+Neu gap loi nay
+------
 
-
-
-
+```
 sudo docker buildx build --platform linux/amd64,linux/arm64 -t toandnseta/demo-cicd .
 [sudo] password for ubuntu: 
 [+] Building 0.0s (0/0)                                                                                                                 docker:default
 ERROR: Multi-platform build is not supported for the docker driver.
 Switch to a different driver, or turn on the containerd image store, and try again.
 Learn more at https://docs.docker.com/go/build-multi-platform/
+```
+
+Fix
+
+Enable BuildKit
+
+```
+export DOCKER_BUILDKIT=1
+```
+
+Create and Use a New Builder with `docker container` Driver
+
+```
+docker buildx create --use
+docker buildx build --platform linux/amd64,linux/arm64 -t toandnseta/demo-cicd .
+```
+
+Retry the Build Command
+
+```
+docker buildx build --platform linux/amd64,linux/arm64 -t toandnseta/demo-cicd --push .
+```
+------
 
 
 
