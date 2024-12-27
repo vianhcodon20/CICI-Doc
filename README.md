@@ -198,9 +198,9 @@ name: "Build and deploy to server"
 
 on:
   push:
-    # Sẽ chạy khi ta release một version mới
-    tags:
-      - "v*"
+    branches: ["main"]
+  pull_request:
+    branches: ["main"]
 
 jobs:
   deploy:
