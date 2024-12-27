@@ -72,6 +72,7 @@ Day image vua duoc build len Docker Hub de luu tru
 docker login
 ```
 
+![image](https://github.com/user-attachments/assets/8b5902ab-95a4-4316-afbf-81d2df704f3c)
 
 
 
