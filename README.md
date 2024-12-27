@@ -115,8 +115,124 @@ docker buildx build --platform linux/amd64,linux/arm64 -t toandnseta/demo-cicd -
 ```
 ------
 
+## Step:
+Build server
+
+Install docker
+
+```
+sudo apt update && sudo apt upgrade -y
+```
+
+```
+sudo apt remove docker docker-engine docker.io containerd runc
+```
+
+```
+sudo apt install -y apt-transport-https ca-certificates curl software-properties-common
+````
+
+```
+curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo gpg --dearmor -o /usr/share/keyrings/docker-archive-keyring.gpg
+```
+
+```
+echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/docker-archive-keyring.gpg] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable" | sudo tee /etc/apt/sources.list.d/docker.list > /dev/null
+```
+
+```
+sudo apt update
+sudo apt install -y docker-ce docker-ce-cli containerd.io
+```
+
+```
+sudo docker --version
+```
+
+```
+sudo systemctl enable docker
+sudo systemctl start docker
+```
+
+Run docker khong can quyen root (sudo)
+
+```
+sudo usermod -aG docker $USER
+```
+
+Pull project
+
+```
+docker pull toandnseta/demo-cicd
+```
+
+Kiem tra image da duoc pull ve chua
+
+```
+sudo docker image ls
+```
+
+Chay container vua duoc pull ve
+
+```
+sudo docker run -d -p 8080:80 toandnseta/demo-cicd
+```
+
+Kiem tra container da duoc chay chua
+
+```
+http://192.168.81.156:8080/
+```
 
 
+## Step 
+Thiết lập quy trình CI/CD bằng Github Actions
+
+Tại project `demo-cicd`. Tao thu muc sau:
+- .github
+  - workflows
+    - deploy.yml 
+
+```
+name: "Build and deploy to server"
+
+on:
+  push:
+    # Sẽ chạy khi ta release một version mới
+    tags:
+      - "v*"
+
+jobs:
+  deploy:
+    name: Deploy to server
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      - name: Login to docker hub
+        uses: docker/login-action@v2
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: Tags docker image
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ secrets.DOCKER_USERNAME }}/demo-cicd # Change this to your docker image name
+
+      - name: Build and push to docker hub
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+```
 
 
 
